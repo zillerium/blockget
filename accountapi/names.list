@@ -1,0 +1,21 @@
+countAll - done
+create
+createAccountOperation
+createCredentials
+createMemo
+createTransfer
+createUpdateOperation
+exist - done
+findAll - done
+findAllReferencesByAccount - done
+findAllReferencesByKeys
+get - done
+getAll - done
+getAllByNames - done
+getByName - done
+getFullAccounts - done
+getStatistics - ** error **
+listAllRelative
+request
+transfer
+update
