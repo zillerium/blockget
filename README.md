@@ -1,4 +1,4 @@
-# blockget
+# blockget readme
 
 This repo defines core SDK functions for building blockget.
 
