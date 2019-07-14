@@ -17,6 +17,7 @@
     "body-parser": "^1.18.3",
     "dcorejs-sdk": "^2.6.0",
     "express": "^4.16.4",
+    "moment": "^2.24.0",
     "mongoose": "^5.4.7",
     "rxjs": "^6.5.2",
     "typescript": "^3.2.4",
