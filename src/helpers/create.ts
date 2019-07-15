@@ -5,7 +5,7 @@ import { DCoreSdk, ObjectType, ECKeyPair, Credentials, ChainObject, Authority  }
 // var  DCoreSdk   = require("dcorejs-sdk");
 
 // create the API
-const api = DCoreSdk.createForWebSocket(() => new WebSocket("wss://testnet-api.dcore.io"));
+const api = DCoreSdk.createForWebSocket(() => new WebSocket("wss://testnet-socket.dcore.io"));
 
 
 //@TODO: dynamically generate Private Key in the required format
