@@ -20,4 +20,6 @@ This paper discuss the need for replicated storage - something we can reject in 
 
 5. https://gateway.btfs.trongrid.io/btfs/QmWnGhWCDPJmrLqkv5YdyF2WwZ2F3XMBwiSFCVbMKsvVJi
 "Efficient Dispersal of Information for Security, Load Balancing, and Fault Tolerance"
+Rabin, Michael O. "Efficient dispersal of information for security, load balancing, and fault tolerance." Journal of the ACM (JACM) 36.2 (1989): 335-348.
+
 This paper talks about how to efficiently split up a file using IDA (information disposal algorithm).
