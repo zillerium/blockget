@@ -11,3 +11,9 @@ DOI:10.1145/1315245.1315317
 3. https://gateway.btfs.trongrid.io/btfs/Qmer8x7UEs7LPAfQKNTc3b2nMMwAyRTrj3ac7zhUDs6Czo
 "Checking the Correctness of Memories"
 Blum, Manuel, et al. "Checking the correctness of memories." Algorithmica 12.2-3 (1994): 225-244.
+
+4. https://gateway.btfs.trongrid.io/btfs/QmNYz9CETUeRsv7amZ7yxdnPehqLpiwLjQsz9e55r2HMdr
+"Optimal Resilience for Erasure-Coded Byzantine Distributed Storage"
+Cachin, Christian, and Stefano Tessaro. "Optimal resilience for erasure-coded Byzantine distributed storage." International Conference on Dependable Systems and Networks (DSN'06). IEEE, 2006.
+
+This paper discuss the need for replicated storage - something we can reject in more modern and advanced approaches.
