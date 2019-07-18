@@ -17,3 +17,7 @@ Blum, Manuel, et al. "Checking the correctness of memories." Algorithmica 12.2-3
 Cachin, Christian, and Stefano Tessaro. "Optimal resilience for erasure-coded Byzantine distributed storage." International Conference on Dependable Systems and Networks (DSN'06). IEEE, 2006.
 
 This paper discuss the need for replicated storage - something we can reject in more modern and advanced approaches.
+
+5. https://gateway.btfs.trongrid.io/btfs/QmWnGhWCDPJmrLqkv5YdyF2WwZ2F3XMBwiSFCVbMKsvVJi
+"Efficient Dispersal of Information for Security, Load Balancing, and Fault Tolerance"
+This paper talks about how to efficiently split up a file using IDA (information disposal algorithm).
