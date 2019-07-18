@@ -84,7 +84,7 @@ async function savefileWithPromise(filename, url) {
     });
 }
 
-function readUrlDataToBuffer(url) {
+function readUrlDataToBufferHttps(url) {
 	console.log("url " + url);
     return new Promise((resolve, reject) => {
         https.get(url, function(response) {
@@ -100,11 +100,34 @@ function readUrlDataToBuffer(url) {
     });
 }
 
+function readUrlDataToBufferHttp(url) {
+        console.log("url " + url);
+    return new Promise((resolve, reject) => {
+        http.get(url, function(response) {
+            const data = [];
+            response.on('data', function(chunk) {
+                data.push(chunk);
+            }).on('end', function() {
+                resolve(Buffer.concat(data));
+            })
+        }).on('error', function(err) {
+            reject(err);
+        });
+    });
+}
+
+
+
 app.post('/addfileb', async function(req, res) {
     try {
         var url = req.body.url;
         console.log(`/addfile: Reading from url: ${url}..`);
-        let buffer = await readUrlDataToBuffer(url);
+	var buffer;
+	    if (url.includes('https')) {
+                buffer = await readUrlDataToBufferHttps(url);
+	    } else {
+		buffer = await readUrlDataToBufferHttp(url);
+	    }
         console.log("Buffer length: " + buffer.length + " byte(s).");
     ipfs.files.add(buffer, function (err, file) {
         if (err) {
