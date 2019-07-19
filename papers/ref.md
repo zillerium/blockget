@@ -23,3 +23,9 @@ This paper discuss the need for replicated storage - something we can reject in 
 Rabin, Michael O. "Efficient dispersal of information for security, load balancing, and fault tolerance." Journal of the ACM (JACM) 36.2 (1989): 335-348.
 
 This paper talks about how to efficiently split up a file using IDA (information disposal algorithm).
+
+6. https://gateway.btfs.trongrid.io/btfs/QmXqqR5YDeEDmSuC5HXS4csFmofa3CLE39KrNqWAKvB5Qu
+"A Dynamic Proof of Retrievability (PoR) Scheme with O(logn) Complexity"
+Mo, Zhen, Yian Zhou, and Shigang Chen. "A dynamic Proof of Retrievability (PoR) scheme with O (logn) complexity." 2012 IEEE International Conference on Communications (ICC). IEEE, 2012.
+
+This is useful background. Although content hashing should remove some of the audit requirements, it is instructive to examine how the files may be split and audited via POR methods. 
