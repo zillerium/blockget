@@ -32,4 +32,8 @@ This is useful background. Although content hashing should remove some of the au
 
 7. https://gateway.btfs.trongrid.io/btfs/Qma9Ju6qAaAEo8EZ5jN3Y1j8txcFhUeEi7XjSwv4NNtRoW.
 Zikratov, Igor, et al. "Ensuring data integrity using blockchain technology." 2017 20th Conference of Open Innovations Association (FRUCT). IEEE, 2017.
- 
+
+8. https://gateway.btfs.trongrid.io/btfs/QmT56wbzcYAT2wg9ArPjPYC1RKeWkZ1X5o1yGRZ8FGAYxq 
+BitTorrent (BTT) White Paper v0.8.7 Feb. 2019
+
+
