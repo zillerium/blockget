@@ -28,4 +28,8 @@ This paper talks about how to efficiently split up a file using IDA (information
 "A Dynamic Proof of Retrievability (PoR) Scheme with O(logn) Complexity"
 Mo, Zhen, Yian Zhou, and Shigang Chen. "A dynamic Proof of Retrievability (PoR) scheme with O (logn) complexity." 2012 IEEE International Conference on Communications (ICC). IEEE, 2012.
 
-This is useful background. Although content hashing should remove some of the audit requirements, it is instructive to examine how the files may be split and audited via POR methods. 
+This is useful background. Although content hashing should remove some of the audit requirements, it is instructive to examine how the files may be split and audited via POR methods.
+
+7. https://gateway.btfs.trongrid.io/btfs/Qma9Ju6qAaAEo8EZ5jN3Y1j8txcFhUeEi7XjSwv4NNtRoW.
+Zikratov, Igor, et al. "Ensuring data integrity using blockchain technology." 2017 20th Conference of Open Innovations Association (FRUCT). IEEE, 2017.
+ 
