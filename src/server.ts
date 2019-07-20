@@ -11,7 +11,8 @@ import { NftModifiableBy } from "dcorejs-sdk/dist/models/NftModifiableBy";
 
 // import * as accountRoutes from './routes/account';
 // import * as contentRoutes from './routes/content';
-// import * as nftRoutes from './routes/nft';
+import * as nftRoutes from './routes/nft';
+import { NftDefinition } from "dcorejs-sdk/dist/models/NftModel";
 
 const app = express();
 const globalAny:any = global;
@@ -33,7 +34,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //routes
 // app.use('/api/v1/account', accountRoutes.default);
 // app.use('/api/v1/content', contentRoutes.default);
-// app.use('/api/v1/nft', nftRoutes.default)
+ app.use('/api/v1/nft', nftRoutes.default)
 
 const apiws = DCoreSdk.createForWebSocket(() => new WebSocket("wss://testnet-socket.dcore.io"));
 
@@ -71,8 +72,7 @@ app.post('/getFullAccountsAll', async (req, res) => {
 })
     
 app.post('/createAccount', async (req, res) => {
-    let balance;
-    var account = req.body.account;
+    var  { account } = req.body;
 
     await create(account);
 
@@ -107,25 +107,17 @@ app.post('/accountExists', async (req, res) => {
 
 
 app.post('/getFullAccounts', async (req, res) => {
-    let balance;
-    var account = req.body.account;
-    //    account = "sdk-account-1560938311";
-
-    console.log("account - "+ account);
-    let searchTerm: string[] = [];
-    searchTerm.push(account);
-
-    console.log("searchTerm - "+ searchTerm);
-    let searchTerm1: string[] = ["sdk-account-1560938311", "public-account-9"];
+    let balances: object[] = [];
+    var { accounts } = req.body;
 
     //const result = await api.accountApi.getFullAccounts(searchTerm);
-    const result = await getFullAccounts(searchTerm);
+    const result = await getFullAccounts(accounts);
     result.subscribe(response => {
         for (let item of response.entries()){
-        balance={"balance":item[1].balances[0].balance.low, "message": "Correct"}
-        console.log("balance is " +balance)
+            console.log(item[1].account)
+        balances.push({[item[0]]: item[1].balances[0].balance.low})
         }
-        res.status(200).send(balance)
+        res.status(200).send({balances, message: 'Correct'})
     })
 });
 
@@ -133,11 +125,16 @@ app.post('/getFullAccounts', async (req, res) => {
 // nft route
 app.post('/mintNFT', async (req, res) => {
     const { accountName, symbol, description, max_supply } = req.body;
-
-    const nftCreationResult = await mintNFT(accountName, symbol, description, max_supply);
-    nftCreationResult.subscribe(tnx => {
-        return res.status(200).send(JSON.stringify(tnx));
-    }) 
+    let nftCreationResult;
+    try {
+        nftCreationResult = await mintNFT(accountName, symbol, description, max_supply);
+        nftCreationResult.subscribe(tnx => {
+            return res.status(200).send(JSON.stringify(tnx));
+        }) 
+    } catch(err){
+        console.log(err.message)
+    }
+   
 });
 
 
@@ -190,15 +187,18 @@ const mintNFT = (accountName, sym, desc, supply) => {
 app.post('/issueNFT', async (req, res) => {
     const { to, VIN, make, model, year_first_registration } = req.body;
 
-    const data = [
+    const data = {
         VIN,
         make,
         model,
         year_first_registration
-    ];
+};
 
     const result = await issueNFT(to, data);
-    result.subscribe(transaction => res.status(200).send({ msg: 'Success!' }));
+    console.log(result)
+//     result.subscribe(transaction => {console.log(transaction);
+//         res.status(200).send({ msg: 'Success!' })
+//    });
 });
 
 
@@ -213,16 +213,40 @@ const getAllNFTs = (symbols: string[]) => {
     return apiws.nftApi.getAllBySymbol(symbols);
 };
 
-app.post('/getAllNFTData', async (req, res) => {
-    const { ids } = req.body;
-    const result = await getAllNFTData(ids);
+app.post('/getAllNFTsBySymbol', async (req, res) => {
+    const { symbols } = req.body;
+    const result = await getAllNFTsBySymbol(symbols);
     result.subscribe(data => res.status(200).send({ data }))
 
 })
 
-const getAllNFTData = (ids: string[]) => {
-    //const idsAsChainObject:ChainObject[]  = ids.map(id => ChainObject.parse(id));
-    return apiws.nftApi.getAllDataRaw([ChainObject.parse("1.10.4")]);
+const getAllNFTsBySymbol = (symbols: string[]) => {
+    //const ids:ChainObject[]  = symbols.map(id => ChainObject.parse(id));
+    return apiws.nftApi.getAllBySymbol(symbols)
+}
+
+app.post('/getAllNFTsByObjectId', async (req, res) => {
+    const { objectIds } = req.body;
+    const result = await getAllNFTsByObjectId(objectIds);
+    result.subscribe(data => res.status(200).send({ data }))
+
+})
+
+const getAllNFTsByObjectId = (objectIds: string[]) => {
+    const ids:ChainObject[]  = objectIds.map(id => ChainObject.parse(id));
+    return apiws.nftApi.getAll(ids);
+}
+
+app.post('/getAllNFTDataByObjectId', async (req, res) => {
+    const { objectIds } = req.body;
+    const result = await getAllNFTDataByObjectId(objectIds);
+    result.subscribe(data => res.status(200).send({ data }))
+
+})
+
+const getAllNFTDataByObjectId = (objectIds: string[]) => {
+    const ids:ChainObject[]  = objectIds.map(id => ChainObject.parse(id));
+    return apiws.nftApi.getAllData([ChainObject.parse('1.2.27')]);
 }
 
 const issueNFT = (to: string, data) => {
@@ -230,18 +254,51 @@ const issueNFT = (to: string, data) => {
     const issuer: Credentials = new Credentials(ChainObject.parse("1.2.27"), "5Hxwqx6JJUBYWjQNt8DomTNJ6r6YK8wDJym4CMAH1zGctFyQtzt");
 
     // symbol
-    const symbol: NftRef = "CAR";
+    const symbol: NftRef = "TES";
 
     // to address
-    const toAddress: ChainObject = ChainObject.parse(to);
+    const toAddress: ChainObject = ChainObject.parse("1.2.27");
 
-    // data model with values
-    return apiws.nftApi.issue(issuer, symbol, toAddress, data);
+    //data
+     // fields - I am waiting on your feedback on how to accept these from the user or whether they are needed to be accepted from users
+     const field1 = new NftDataType(NftFieldType.String, true, NftModifiableBy.Issuer, "VIN");
+     const field2 = new NftDataType(NftFieldType.String, false, NftModifiableBy.Issuer, "make");
+     const field3 = new NftDataType(NftFieldType.String, false, NftModifiableBy.Issuer, "model");
+     const field4 = new NftDataType(NftFieldType.Integer, false, NftModifiableBy.Issuer, "year_first_registration");
+     // definitions
+     const definitions: NftDataType[] = [
+         field1,
+         field2,
+         field3,
+         field4
+     ];
 
-
+    
+    let dataModel: NftDefinition = new NftDefinition["WAUZZZ8K6AA103083", "AUDI", "A7", 2014];
+    dataModel.definition = definitions;
+    // let values: any = ["WAUZZZ8K6AA103083","AUDI","A7",2014]
+    // NftDefinition.DEFINITION = definitions;
+    // NftDefinition.createUpdate(NftDefinition.DEFINITION, values)
+    // // data model with values
+    return apiws.nftApi.issue(issuer, symbol , toAddress, dataModel);
 };
 
-const transferNFT = () => {
+app.post('/transferNFT', async (req, res) => {
+    const { to, nftId } = req.body;
+    const result = await transferNFT(to, nftId);
+    result.subscribe(tnx => console.log(tnx))
+})
+const transferNFT = (to: string, nft: string) => {
+    // how do you wan to define the issuer here?
+    const issuer: Credentials = new Credentials(ChainObject.parse("1.2.27"), "5Hxwqx6JJUBYWjQNt8DomTNJ6r6YK8wDJym4CMAH1zGctFyQtzt");
+
+     // to address
+     const toAddress: ChainObject = ChainObject.parse("1.2.28");
+
+     // nft id
+     const nftId: ChainObject = ChainObject.parse("1.10.4");
+
+    return apiws.nftApi.transfer(issuer, toAddress, nftId);
 
 };
 
