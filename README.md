@@ -10,7 +10,7 @@ Expected Response: {"message":"Correct"}
 2. POST /accountExists
 curl -H "Content-Type: application/json" -d '{ "account": "trevor3"}' http://blockget.store:3000/accountExists
 
-Expected Response: {"exists":boolean,"message":"Correct"}
+Expected Response: {"exists":true,"message":"Correct"}
 
 3. POST /getFullAccounts
 curl -H "Content-Type: application/json" -d '{ "accounts": ["trevor3", "public-account-9"]}' http://blockget.store:3000/getFullAccounts
