@@ -11,7 +11,6 @@ import { NftModifiableBy } from "dcorejs-sdk/dist/models/NftModifiableBy";
 
 // import * as accountRoutes from './routes/account';
 // import * as contentRoutes from './routes/content';
-import * as nftRoutes from './routes/nft';
 import { NftDefinition } from "dcorejs-sdk/dist/models/NftModel";
 
 const app = express();
@@ -34,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //routes
 // app.use('/api/v1/account', accountRoutes.default);
 // app.use('/api/v1/content', contentRoutes.default);
- app.use('/api/v1/nft', nftRoutes.default)
+//  app.use('/api/v1/nft', nftRoutes.default)
 
 const apiws = DCoreSdk.createForWebSocket(() => new WebSocket("wss://testnet-socket.dcore.io"));
 
@@ -274,13 +273,13 @@ const issueNFT = (to: string, data) => {
      ];
 
     
-    let dataModel: NftDefinition = new NftDefinition["WAUZZZ8K6AA103083", "AUDI", "A7", 2014];
-    dataModel.definition = definitions;
+    //let dataModel: NftDefinition = new NftDefinition["WAUZZZ8K6AA103083", "AUDI", "A7", 2014];
+    //dataModel.definition = definitions;
     // let values: any = ["WAUZZZ8K6AA103083","AUDI","A7",2014]
     // NftDefinition.DEFINITION = definitions;
     // NftDefinition.createUpdate(NftDefinition.DEFINITION, values)
     // // data model with values
-    return apiws.nftApi.issue(issuer, symbol , toAddress, dataModel);
+    //return apiws.nftApi.issue(issuer, symbol , toAddress, dataModel);
 };
 
 app.post('/transferNFT', async (req, res) => {
