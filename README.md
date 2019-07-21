@@ -15,7 +15,7 @@ curl -H "Content-Type: application/json" -d '{ "accounts": ["trevor3", "public-a
 Expected Response: {"balances":[{accountName: balance}],"message":"Correct"}
 
 4. POST /mintNFT<br><br>
-curl -H "Content-Type: application/json" -d '{"accountName":"public-account-9", "symbol":"TES", "description":"TEST", "max_supply": 200000}' http://blockget.store:3000/mintNFT<br>
+curl -H "Content-Type: application/json" -d '{"accountName":"public-account-9", "symbol":"TES", "description":"TEST", "max_supply": 200000}' http://blockget.store:3000/mintNFT<br><br><br>
 Sample Response: 
 {"id":"594e5edeca06ac4d47e9dd304db9b375b7094ed6","blockNum":521002,"trxNum":0,"transaction":{"refBlockNum":62249,"refBlockPrefix":2866807378,"expiration":"2019-07-20T18:40:04.000Z","operations":[{"extensions":[],"type":46,"id":41}],"extensions":[],"signatures":["2066a18f7a65a032ce9aef5370ff67d470cfd4cda8a6529d806e124c2715af07bb5f19f19cd06c7ca7faf9555ed8e70138c2111af12a07d1b8f93fdede40db700b"],"opResults":[[1,"1.10.9"]]}}
 
