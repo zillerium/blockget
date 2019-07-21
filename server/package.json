@@ -1,0 +1,25 @@
+{
+  "name": "ubuntu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "exist.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dcorejs-sdk": "^2.6.0",
+    "express": "^4.17.1",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.5.2",
+    "typescript": "^3.5.3",
+    "ws": "^7.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest --watch",
+    "build": "tsc",
+    "dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' server.ts",
+    "start": "nodemon ./dist/server.js",
+    "prod": "npm run build && npm run start"
+  },
+  "author": "",
+  "license": "ISC"
+}
