@@ -183,25 +183,6 @@ const mintNFT = (accountName, sym, desc, supply) => {
     return apiws.nftApi.create(issuer, symbol, maxSupply, fixedMaxSupply, description, definitions, transferable);
 };
 
-app.post('/issueNFT', async (req, res) => {
-    const { to, VIN, make, model, year_first_registration } = req.body;
-
-    const data = {
-        VIN,
-        make,
-        model,
-        year_first_registration
-};
-
-    const result = await issueNFT(to, data);
-    console.log(result)
-//     result.subscribe(transaction => {console.log(transaction);
-//         res.status(200).send({ msg: 'Success!' })
-//    });
-});
-
-
-
 app.post('/getAllNFTs', async (req, res) => {
     const { symbols } = req.body;
     const result = await getAllNFTs(symbols);
@@ -212,6 +193,7 @@ const getAllNFTs = (symbols: string[]) => {
     return apiws.nftApi.getAllBySymbol(symbols);
 };
 
+// get all nft data by nft symbol
 app.post('/getAllNFTsBySymbol', async (req, res) => {
     const { symbols } = req.body;
     const result = await getAllNFTsBySymbol(symbols);
@@ -224,6 +206,7 @@ const getAllNFTsBySymbol = (symbols: string[]) => {
     return apiws.nftApi.getAllBySymbol(symbols)
 }
 
+// get all nft data with nft object id
 app.post('/getAllNFTsByObjectId', async (req, res) => {
     const { objectIds } = req.body;
     const result = await getAllNFTsByObjectId(objectIds);
@@ -236,6 +219,7 @@ const getAllNFTsByObjectId = (objectIds: string[]) => {
     return apiws.nftApi.getAll(ids);
 }
 
+// get all nft data with nft data object id
 app.post('/getAllNFTDataByObjectId', async (req, res) => {
     const { objectIds } = req.body;
     const result = await getAllNFTDataByObjectId(objectIds);
@@ -244,26 +228,59 @@ app.post('/getAllNFTDataByObjectId', async (req, res) => {
 })
 
 const getAllNFTDataByObjectId = (objectIds: string[]) => {
-    const ids:ChainObject[]  = objectIds.map(id => ChainObject.parse(id));
-    return apiws.nftApi.getAllData([ChainObject.parse('1.2.27')]);
+    //const ids:ChainObject[]  = objectIds.map(id => ChainObject.parse(id));
+    return apiws.nftApi.getAllData([ChainObject.parse('1.11.5')]);
 }
 
-const issueNFT = (to: string, data) => {
-    // how do you wan to define the issuer here?
+
+// get data list for a particular NFT
+app.post('/getDataListByNFT', async (req, res) => {
+    const { nftId } = req.body;
+    const result = await getDataListByNFT(nftId);
+    result.subscribe(data => res.status(200).send(data));
+});
+
+const getDataListByNFT = (nftId: string) => {
+    return apiws.nftApi.listDataByNft(ChainObject.parse(nftId));
+}
+// issue NFT    
+app.post('/issueNFT', async (req, res) => {
+    const { to, nftSymbol, VIN, make, model, year_first_registration } = req.body;
+
+    const data = [
+        VIN,
+        make,
+        model, 
+        year_first_registration
+    ];
+
+    try {
+        const result = await issueNFT(to, nftSymbol, data);
+        result.subscribe(transaction => {console.log(transaction);
+            res.status(200).send({ transactionId: transaction.id, blockNum: transaction.blockNum, msg: 'Success!' })
+       });
+    } catch (err) {
+        console.log(err)
+    }
+});
+
+const issueNFT = (to: string, nftSymbol: NftRef, data: any[]) => {
+    // an issuer is needed to issue the token - this account is the creator of the NFT type, for example CAR
     const issuer: Credentials = new Credentials(ChainObject.parse("1.2.27"), "5Hxwqx6JJUBYWjQNt8DomTNJ6r6YK8wDJym4CMAH1zGctFyQtzt");
 
     // symbol
-    const symbol: NftRef = "TES";
+    const symbol: NftRef = nftSymbol;
 
     // to address
     const toAddress: ChainObject = ChainObject.parse("1.2.27");
 
     //data
-     // fields - I am waiting on your feedback on how to accept these from the user or whether they are needed to be accepted from users
+     // fields - based on CAR implementation
      const field1 = new NftDataType(NftFieldType.String, true, NftModifiableBy.Issuer, "VIN");
      const field2 = new NftDataType(NftFieldType.String, false, NftModifiableBy.Issuer, "make");
      const field3 = new NftDataType(NftFieldType.String, false, NftModifiableBy.Issuer, "model");
      const field4 = new NftDataType(NftFieldType.Integer, false, NftModifiableBy.Issuer, "year_first_registration");
+     
      // definitions
      const definitions: NftDataType[] = [
          field1,
@@ -272,32 +289,32 @@ const issueNFT = (to: string, data) => {
          field4
      ];
 
-    
-    //let dataModel: NftDefinition = new NftDefinition["WAUZZZ8K6AA103083", "AUDI", "A7", 2014];
-    //dataModel.definition = definitions;
-    // let values: any = ["WAUZZZ8K6AA103083","AUDI","A7",2014]
-    // NftDefinition.DEFINITION = definitions;
-    // NftDefinition.createUpdate(NftDefinition.DEFINITION, values)
-    // // data model with values
-    //return apiws.nftApi.issue(issuer, symbol , toAddress, dataModel);
+
+    let dataModel: NftDefinition = {
+        definition: definitions,
+        values: data,
+        updates: NftDefinition.createUpdate(definitions, data)
+    };
+
+    return apiws.nftApi.issue(issuer, symbol , toAddress, dataModel);
 };
 
 app.post('/transferNFT', async (req, res) => {
-    const { to, nftId } = req.body;
-    const result = await transferNFT(to, nftId);
-    result.subscribe(tnx => console.log(tnx))
+    const { to, nftDataId } = req.body;
+    const result = await transferNFT(to, nftDataId);
+    result.subscribe(tnx => res.status(200).send({ transactionId: tnx.id, blockNum: tnx.blockNum, msg:'Success!'}))
 })
-const transferNFT = (to: string, nft: string) => {
+const transferNFT = (to: string, nftData: string) => {
     // how do you wan to define the issuer here?
     const issuer: Credentials = new Credentials(ChainObject.parse("1.2.27"), "5Hxwqx6JJUBYWjQNt8DomTNJ6r6YK8wDJym4CMAH1zGctFyQtzt");
 
      // to address
-     const toAddress: ChainObject = ChainObject.parse("1.2.28");
+     const toAddress: ChainObject = ChainObject.parse(to);
 
-     // nft id
-     const nftId: ChainObject = ChainObject.parse("1.10.4");
+     // nft data id
+     const nftDataId: ChainObject = ChainObject.parse(nftData);
 
-    return apiws.nftApi.transfer(issuer, toAddress, nftId);
+    return apiws.nftApi.transfer(issuer, toAddress, nftDataId);
 
 };
 
