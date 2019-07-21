@@ -260,7 +260,7 @@ app.post('/issueNFT', async (req, res) => {
             res.status(200).send({ transactionId: transaction.id, blockNum: transaction.blockNum, msg: 'Success!' })
        });
     } catch (err) {
-        console.log(err)
+        res.status(400).send({error: err.message})
     }
 });
 
