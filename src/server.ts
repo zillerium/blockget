@@ -258,7 +258,7 @@ app.post('/issueNFT', async (req, res) => {
         const result = await issueNFT(to, nftSymbol, data);
         result.subscribe(transaction => {console.log(transaction);
             res.status(200).send({ transactionId: transaction.id, blockNum: transaction.blockNum, msg: 'Success!' })
-       });
+       }, (err) => res.status(400).send({error: err.message}));
     } catch (err) {
         res.status(400).send({error: err.message})
     }
