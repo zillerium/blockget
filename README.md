@@ -3,7 +3,6 @@
 Following is the list of requests that could be made to the server along with their corresponding responses:
 
 1. Creating an Account <br><br>
-
 Method: POST 
 Endpoint: /createAccount <br>
 Payload: Payload should have `account`, which should be the `Account name` that is to be created<br><br>
@@ -20,7 +19,7 @@ Response: {"exists":true,"message":"Correct"}
 3. Get Balances of accounts<br><br>
 Method: POST <br>
 Endpoint: /getFullAccounts<br>
-Payload: `accounts` - an array of account ids
+Payload: `accounts` - an array of account ids<br><br>
 Script: curl -H "Content-Type: application/json" -d '{ "accounts": ["trevor3", "public-account-9"]}' http://blockget.store:3000/getFullAccounts<br><br>
 Response: {"balances":[{accountName: balance}],"message":"Correct"}
 
