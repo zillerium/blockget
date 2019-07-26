@@ -124,11 +124,23 @@ app.post('/getFullAccounts', async (req, res) => {
 // nft route
 app.post('/mintNFT', async (req, res) => {
     const { accountName, symbol, description, max_supply } = req.body;
+
+    //const accountName = req.body.accountName;
+    //const symbol = req.body.symbol;
+    //const description = req.body.description;
+    //const max_supply = req.body.max_supply;
+
+    console.log("accountName = " + accountName);
+    console.log("symbol = " + symbol);
+    console.log("description = " + description);
+    console.log("max_supply = " + max_supply);
+
+
     let nftCreationResult;
     try {
         nftCreationResult = await mintNFT(accountName, symbol, description, max_supply);
         nftCreationResult.subscribe(tnx => {
-            return res.status(200).send(JSON.stringify(tnx));
+	return res.status(200).send(JSON.stringify(tnx));
         }) 
     } catch(err){
         console.log(err.message)
@@ -156,16 +168,10 @@ const mintNFT = (accountName, sym, desc, supply) => {
     const description: string = desc;
 
     // fields - I am waiting on your feedback on how to accept these from the user or whether they are needed to be accepted from users
-    const field1 = new NftDataType(NftFieldType.String, true, NftModifiableBy.Issuer, "VIN");
-    const field2 = new NftDataType(NftFieldType.String, false, NftModifiableBy.Issuer, "make");
-    const field3 = new NftDataType(NftFieldType.String, false, NftModifiableBy.Issuer, "model");
-    const field4 = new NftDataType(NftFieldType.Integer, false, NftModifiableBy.Issuer, "year_first_registration");
+    const field1 = new NftDataType(NftFieldType.String, true, NftModifiableBy.Issuer, "Hash");
     // definitions
     const definitions: NftDataType[] = [
-        field1,
-        field2,
-        field3,
-        field4
+        field1
     ];
 
     // max supply
@@ -193,18 +199,40 @@ const getAllNFTs = (symbols: string[]) => {
     return apiws.nftApi.getAllBySymbol(symbols);
 };
 
+const getAllNFTsBySymbol = (symbols: string[]) => {
+//const ids:ChainObject[]  = symbols.map(id => ChainObject.parse(id));
+try 
+{
+const result = apiws.nftApi.getAllBySymbol(symbols);
+return result;
+   }
+   catch(e) {
+      return null;
+    }
+}
+
 // get all nft data by nft symbol
 app.post('/getAllNFTsBySymbol', async (req, res) => {
-    const { symbols } = req.body;
-    const result = await getAllNFTsBySymbol(symbols);
-    result.subscribe(data => res.status(200).send({ data }))
+const { symbol } = req.body;
+console.log(symbol);
+let symbols: string[]= [];
+symbols.push(symbol);
+console.log(symbols);
+      //   var symbols: Array<string>;
+              // console.log(symbols);
+              // console.log(symbol);
+              // symbols.push(symbol);
+              // console.log(symbols);
+
+              const result = await getAllNFTsBySymbol(symbols);
+              if (result == null)
+                 res.status(200).send({ "message":"Incorrect" });
+              else
+                 result.subscribe(data => res.status(200).send({ data, "message":"Correct" }))
 
 })
 
-const getAllNFTsBySymbol = (symbols: string[]) => {
-    //const ids:ChainObject[]  = symbols.map(id => ChainObject.parse(id));
-    return apiws.nftApi.getAllBySymbol(symbols)
-}
+
 
 // get all nft data with nft object id
 app.post('/getAllNFTsByObjectId', async (req, res) => {
@@ -245,13 +273,12 @@ const getDataListByNFT = (nftId: string) => {
 }
 // issue NFT    
 app.post('/issueNFT', async (req, res) => {
-    const { to, nftSymbol, VIN, make, model, year_first_registration } = req.body;
-
+    const { to, nftSymbol, hash } = req.body;
+   console.log("to = "+ to); 
+   console.log("nftSymbol = "+ nftSymbol); 
+   console.log("hash = "+ hash); 
     const data = [
-        VIN,
-        make,
-        model, 
-        year_first_registration
+        hash
     ];
 
     try {
@@ -276,17 +303,11 @@ const issueNFT = (to: string, nftSymbol: NftRef, data: any[]) => {
 
     //data
      // fields - based on CAR implementation
-     const field1 = new NftDataType(NftFieldType.String, true, NftModifiableBy.Issuer, "VIN");
-     const field2 = new NftDataType(NftFieldType.String, false, NftModifiableBy.Issuer, "make");
-     const field3 = new NftDataType(NftFieldType.String, false, NftModifiableBy.Issuer, "model");
-     const field4 = new NftDataType(NftFieldType.Integer, false, NftModifiableBy.Issuer, "year_first_registration");
+     const field1 = new NftDataType(NftFieldType.String, true, NftModifiableBy.Issuer, "Hash");
      
      // definitions
      const definitions: NftDataType[] = [
-         field1,
-         field2,
-         field3,
-         field4
+         field1
      ];
 
 
@@ -295,7 +316,10 @@ const issueNFT = (to: string, nftSymbol: NftRef, data: any[]) => {
         values: data,
         updates: NftDefinition.createUpdate(definitions, data)
     };
-
+console.log("issuer = " + issuer);
+console.log("symbol = " + symbol);
+console.log("toAddress = " + toAddress);
+console.log("dataModel = " + dataModel);
     return apiws.nftApi.issue(issuer, symbol , toAddress, dataModel);
 };
 
