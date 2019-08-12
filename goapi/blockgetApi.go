@@ -7,16 +7,21 @@ import (
 	"strconv"
 	"encoding/json"
 	"github.com/gorilla/mux"
+        "bytes"
+        shell "github.com/ipfs/go-ipfs-api"
+        webFile "github.com/ipfs/go-ipfs-files"
+        "io/ioutil"
+        "net/url"
 )
 
-type Article struct{
+type BitData struct{
 	ID	string `json:id`
-	Title string `json:"title"`
-	Desc string `json:"desc"`
-	Content string `json:"content"`
+	Url string `json:"url"`
+	Account string `json:"account"`
+	CID string `json:"cid"`
 }
 
-var Articles []Article
+var BitDataArray []BitData
 
 func allArticles(w http.ResponseWriter, r *http.Request) {
 //	articles := Articles {
@@ -26,20 +31,22 @@ func allArticles(w http.ResponseWriter, r *http.Request) {
 //	json.NewEncoder(w).Encode(articles)
 }
 
-func addArticle (w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var newArticle Article
-	json.NewDecoder(r.Body).Decode(&newArticle)
-	newArticle.ID = strconv.Itoa(len(Articles)+1)
-	Articles = append(Articles, newArticle)
-	json.NewEncoder(w).Encode(newArticle)
+func addBitData(w http.ResponseWriter, r *http.Request){
+        w.Header().Set("Content-Type", "application/json")
+        var newBitData BitData
+        json.NewDecoder(r.Body).Decode(&newBitData)
+        newBitData.ID = strconv.Itoa(len(BitDataArray)+1)
+        BitDataArray = append(BitDataArray, newBitData)
+	storeBTFS(&newBitData)
+        json.NewEncoder(w).Encode(newBitData)
 }
 
-func getArticle (w http.ResponseWriter, r *http.Request) {
+
+func getBitData (w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Println("getarticle")
 	params := mux.Vars(r)
-	for _, item := range Articles {
+	for _, item := range BitDataArray {
 		if item.ID == params["id"] {
 			json.NewEncoder(w).Encode(item)
 			return
@@ -60,11 +67,40 @@ func handleRequests() {
 
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/getArticle/{id}", getArticle).Methods("GET")
-	myRouter.HandleFunc("/addArticle", addArticle).Methods("POST")
+//	myRouter.HandleFunc("/storebtfs", storeBTFS)
+	myRouter.HandleFunc("/getBitData/{id}", getBitData).Methods("GET")
+	myRouter.HandleFunc("/addBitData", addBitData).Methods("POST")
 	log.Fatal(http.ListenAndServe(":9090", myRouter))
 
 }
+
+func storeBTFS(bd *BitData) {
+
+	myurl := bd.Url
+	 fmt.Printf("\nurl: %s", myurl)
+
+	sh := shell.NewShell("localhost:5001")
+	u, _ := url.Parse(myurl)
+	wf := webFile.NewWebFile(u)
+	defer wf.Close()
+
+	b, _ := ioutil.ReadAll(wf)
+
+	in := bytes.NewReader(b)
+
+	cid, err := sh.Add(in)
+	if err != nil {
+		fmt.Printf("\nerror: %s", err)
+	 } else {
+		bd.CID = cid
+	 }
+
+	fmt.Printf("\ncid: %s", cid)
+}
+
+
+
+
 
 func main() {
 	handleRequests()
