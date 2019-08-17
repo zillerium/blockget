@@ -15,7 +15,7 @@ import (
 	shell "github.com/ipfs/go-ipfs-api"
 	webFile "github.com/ipfs/go-ipfs-files"
 
-	//	"net"
+		"net"
 	"github.com/blockget-grpc/audit/auditpb"
 	"google.golang.org/grpc"
 )
@@ -94,43 +94,17 @@ func handleRequests() {
 	//log.Fatal(http.ListenAndServe(":9090", myRouter))
 
 	// withinsecure for testing only - add ssl later
-	cc, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 
-	if err != nil {
-		log.Fatalf("could not connect: %w", err)
-	}
+	     lis, errs := net.Listen("tcp", "0.0.0.0:50051")
+	     if errs !=nil {
+	              log.Fatalf("failed to listen %w", errs)
+	      }
+	       s :=grpc.NewServer()
+	       auditpb.RegisterAuditServiceServer(s, &server{})
+	       if err:=s.Serve(lis); err !=nil {
+	               log.Fatalf("failed to serve %w", err)
 
-	defer cc.Close()
-
-	c := auditpb.NewAuditServiceClient(cc)
-
-	log.Printf("created client: %f", c)
-
-	fmt.Println("Starting unary RPC")
-	req := &auditpb.AuditRequest{
-		Msg: &auditpb.AuditMessage{
-			Hashcode: "hashcode example",
-			Account:  "account example",
-		},
-	}
-
-	res, err := c.Audit(context.Background(), req)
-	if err != nil {
-		log.Fatalf("error while calling audit rpc %v", err)
-	}
-
-	log.Printf("response from Audit %v", res.Result)
-
-	//     lis, errs := net.Listen("tcp", "0.0.0.0:50052")
-	//     if errs !=nil {
-	//              log.Fatalf("failed to listen %w", errs)
-	//      }
-	//       s :=grpc.NewServer()
-	//       auditpb.RegisterAuditServiceServer(s, &server{})
-	//       if err:=s.Serve(lis); err !=nil {
-	//               log.Fatalf("failed to serve %w", err)
-
-	//	}
+		}
 
 }
 

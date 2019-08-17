@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package example;
+
+option go_package="auditpb";
+
+message AuditMessage{
+    string hashcode=1;
+    string account=2;
+}
+
+message AuditRequest {
+    AuditMessage msg = 1;
+}
+
+message AuditResponse {
+    string result = 1;
+}
+
+
+service AuditService {
+    rpc Audit(AuditRequest) returns (AuditResponse) {};
+}
